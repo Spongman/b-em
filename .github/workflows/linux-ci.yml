@@ -18,6 +18,8 @@ jobs:
         packages: liballegro5-dev
 
     - uses: actions/checkout@v3
+    - name: autogen
+      run: ./autogen.sh
     - name: configure
       run: ./configure
     - name: make
