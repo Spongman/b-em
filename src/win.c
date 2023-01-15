@@ -35,6 +35,14 @@ ALLEGRO_PATH *find_dat_file(ALLEGRO_PATH *dir, const char *name, const char *ext
             return path;
         al_destroy_path(path);
     }
+#ifndef NDEBUG
+    if ((path = al_create_path_for_directory(current_directory))) {
+        al_join_paths(path, dir);
+        if (win_file_exists(path, name, ext))
+            return path;
+        al_destroy_path(path);
+    }
+#endif
     return NULL;
 }
 

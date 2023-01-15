@@ -105,6 +105,8 @@ const emu_speed_t emu_speeds[NUM_EMU_SPEEDS] = {
     { "500%", 1.0 / (50.0 * 5.00), 5 }
 };
 
+char* current_directory;
+
 void main_reset()
 {
     m6502_reset();
@@ -159,6 +161,8 @@ void main_init(int argc, char *argv[])
         fputs("Failed to initialise Allegro!\n", stderr);
         exit(1);
     }
+
+    current_directory = al_get_current_directory();
 
     al_init_native_dialog_addon();
     al_set_new_window_title(VERSION_STR);
