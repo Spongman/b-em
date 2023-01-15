@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+#include <memory.h> // for _alloca
+#define alloca _alloca
+#endif
+
 #define DIR_SECTORS     5
 #define INITIAL_SECTORS (DIR_SECTORS+2)
 

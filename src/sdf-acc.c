@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include "b-em.h"
 #include "disc.h"
@@ -385,11 +386,11 @@ static void sdf_abort(int drive)
 #ifndef WIN32
 static void sdf_lock(int drive, FILE *fp, int ltype)
 {
-#ifdef linux
-#define LOCK_WAIT F_OFD_SETLKW
-#else
+//#ifdef linux
+//#define LOCK_WAIT F_OFD_SETLKW
+//#else
 #define LOCK_WAIT F_SETLKW
-#endif
+//#endif
     int res;
     struct flock fl;
     int fd = fileno(fp);

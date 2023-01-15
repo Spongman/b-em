@@ -34,6 +34,11 @@
 #include "video_render.h"
 #include "vdfs.h"
 
+#ifdef _MSC_VER
+#define popen _popen
+#define pclose _pclose
+#endif
+
 #if defined(HAVE_JACK_JACK_H) || defined(HAVE_ALSA_ASOUNDLIB_H)
 #define HAVE_LINUX_MIDI
 #include "midi-linux.h"

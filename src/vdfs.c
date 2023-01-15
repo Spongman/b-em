@@ -47,7 +47,6 @@
 
 #include <errno.h>
 #include <stdlib.h>
-#include <dirent.h>
 //#include <unistd.h>
 
 #include <sys/stat.h>
@@ -1195,9 +1194,10 @@ static bool is_inf(const char *path)
     return ptr && (ptr[1] == 'I' || ptr[1] == 'i') && (ptr[2] == 'N' || ptr[2] == 'n') && (ptr[3] == 'F' || ptr[3] == 'f') && !ptr[4];
 }
 
-static void scan_dir_host(vdfs_entry *dir, DIR *dp)
+static void scan_dir_host(vdfs_entry *dir, ALLEGRO_FS_ENTRY *dp)
 {
-    struct dirent *dep;
+    //struct dirent *dep;
+    ALLEGRO_FS_ENTRY* dep;
 
     // Mark all previos entries deleted but leave them in the list.
     for (vdfs_entry *ent = dir->u.dir.children; ent; ent = ent->next)
@@ -1206,13 +1206,14 @@ static void scan_dir_host(vdfs_entry *dir, DIR *dp)
     // Go through the entries in the host dir, find each in the
     // list and mark it as extant, if found, or create a new
     // entry if not.
-    while ((dep = readdir(dp))) {
-        if (*(dep->d_name) != '.') {
-            if (!is_inf(dep->d_name)) {
-                vdfs_entry *ent = host_search(dir, dep->d_name);
+    while ((dep = al_read_directory(dp))) {
+        const char* d_name = al_get_fs_entry_name(dep);
+        if (*(d_name) != '.') {
+            if (!is_inf(d_name)) {
+                vdfs_entry *ent = host_search(dir, d_name);
                 if (ent)
                     scan_entry(ent);
-                else if (!(ent = new_entry(dir, dep->d_name)))
+                else if (!(ent = new_entry(dir, d_name)))
                     break;
             }
         }
@@ -1221,7 +1222,15 @@ static void scan_dir_host(vdfs_entry *dir, DIR *dp)
 
 static int scan_dir(vdfs_entry *dir)
 {
-    DIR  *dp;
+    if (!dir) {
+        log_error("vdfs: scan_dir NULL dir");
+        return 0;
+    }
+
+    if (!strcmp(dir->host_path, ".") || !strcmp(dir->host_path, "..")) {
+        return 0;
+    }
+
     struct stat stb;
 
     // Has this been scanned sufficiently recently already?
@@ -1234,14 +1243,16 @@ static int scan_dir(vdfs_entry *dir)
     }
     show_activity();
 
-    if ((dp = opendir(dir->host_path))) {
+    const ALLEGRO_FS_ENTRY* dp = al_create_fs_entry(dir->host_path);
+    if (al_open_directory(dir)) {
         scan_dir_host(dir, dp);
-        closedir(dp);
+        al_destroy_fs_entry(dp);
         scan_inf_dir(dir);
         dir->u.dir.scan_seq = scan_seq;
         dir->u.dir.scan_mtime = stb.st_mtime;
         return 0;
     } else {
+        al_destroy_fs_entry(dp);
         log_warn("vdfs: unable to opendir '%s': %s", dir->host_path, strerror(errno));
         return 1;
     }
