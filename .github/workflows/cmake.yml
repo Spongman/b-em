@@ -56,7 +56,9 @@ jobs:
     steps:
         
     - uses: actions/checkout@v3
-
+    #- uses: ilammy/msvc-dev-cmd
+    - uses: egor-tensin/vs-shell@v2
+    
     - name: vcpkg build
       uses: johnwason/vcpkg-action@v4
       id: vcpkg
