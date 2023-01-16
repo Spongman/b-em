@@ -28,7 +28,7 @@ jobs:
       uses: johnwason/vcpkg-action@v4
       id: vcpkg
       with:
-        #pkgs: allegro5 zlib
+        manifest-dir: ${{ github.workspace }} 
         triplet: x86-windows-release
         token: ${{ github.token }}
 
