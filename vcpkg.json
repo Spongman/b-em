@@ -1,0 +1,10 @@
+{
+  "name": "b-em",
+  "version-string": "2.2",
+  "homepage": "https://github.com/stardot/b-em",
+  "description": "An opensource BBC Micro emulator for Win32 and Linux",
+  "dependencies": [
+    "allegro5",
+    "zlib"
+	]
+}
